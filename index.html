@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Captura Fotos con Ubicación</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Registro de Fotos con Ubicación</h1>
+    <p>Presiona el botón para tomar una foto y registrar tu ubicación.</p>
+    <video id="camera" autoplay playsinline></video>
+    <canvas id="photoCanvas"></canvas>
+    <button id="captureBtn">Tomar Foto</button>
+    <p id="location"></p>
+    <button id="saveBtn" style="display: none;">Guardar</button>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

@@ -3,21 +3,51 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Captura Fotos con Ubicación</title>
-  <link rel="stylesheet" href="styles.css">
+  <title>Subir Foto a Cloudinary</title>
 </head>
 <body>
-  <div class="container">
-    <h1>Registro de Fotos con Ubicación</h1>
-    <p>Presiona el botón para tomar una foto y registrar tu ubicación.</p>
-    <video id="camera" autoplay playsinline></video>
-    <canvas id="photoCanvas"></canvas>
-    <button id="captureBtn">Tomar Foto</button>
-    <p id="location"></p>
-    <button id="saveBtn" style="display: none;">Guardar</button>
-  </div>
-  <script src="script.js"></script>
-  <script src="https://upload.cloudinary.com/global/all.js"></script>
+  <h1>Sube una foto a Cloudinary</h1>
 
+  <!-- Formulario para seleccionar una imagen -->
+  <input type="file" id="fileInput" accept="image/*" />
+  <button onclick="uploadImage()">Subir Imagen</button>
+
+  <script>
+    // Configuración de Cloudinary con tus credenciales
+    cloudinary.config({
+      cloud_name: 'tu_cloud_name',  // Reemplaza con tu Cloud name
+      api_key: 'tu_api_key',        // Reemplaza con tu API key
+      api_secret: 'tu_api_secret'   // Reemplaza con tu API secret
+    });
+
+    function uploadImage() {
+      const fileInput = document.getElementById('fileInput');
+      const file = fileInput.files[0];
+
+      if (file) {
+        // Usamos la API de Cloudinary para subir la imagen
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', 'ml_default');  // Reemplaza con tu upload preset si es necesario
+
+        fetch('https://api.cloudinary.com/v1_1/tu_cloud_name/image/upload', {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Imagen subida con éxito:', data);
+          alert('Imagen subida con éxito!');
+          console.log('URL de la imagen:', data.secure_url);
+        })
+        .catch(error => {
+          console.error('Error al subir la imagen:', error);
+          alert('Error al subir la imagen');
+        });
+      } else {
+        alert('Por favor, selecciona una imagen primero.');
+      }
+    }
+  </script>
 </body>
 </html>

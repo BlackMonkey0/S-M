@@ -1,36 +1,56 @@
-const video = document.getElementById('camera');
-const canvas = document.getElementById('photoCanvas');
-const captureBtn = document.getElementById('captureBtn');
-const saveBtn = document.getElementById('saveBtn');
-const locationText = document.getElementById('location');
+// Obtener los elementos del DOM
+const startScanBtn = document.getElementById('startScanBtn');
+const qrResult = document.getElementById('scanned-result');
+const qrReaderContainer = document.getElementById('qr-reader');
 
-// Iniciar cámara
-navigator.mediaDevices.getUserMedia({ video: true })
-  .then(stream => {
-    video.srcObject = stream;
-  })
-  .catch(err => console.error("No se puede acceder a la cámara:", err));
+// Inicializa el escáner QR
+let html5QrCode;
+let isScanning = false; // Control para saber si estamos escaneando
 
-// Tomar foto
-captureBtn.addEventListener('click', () => {
-  const context = canvas.getContext('2d');
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
-  context.drawImage(video, 0, 0, canvas.width, canvas.height);
-  saveBtn.style.display = 'block'; // Mostrar botón para guardar
-});
+startScanBtn.addEventListener('click', () => {
+    if (isScanning) {
+        // Detener el escáner si ya está en funcionamiento
+        html5QrCode.stop().then(() => {
+            console.log("Escáner detenido");
+            isScanning = false; // Cambiar el estado de escaneo
+            qrResult.textContent = "Escáner detenido. Haz clic en 'Iniciar' para empezar de nuevo.";
+        }).catch((err) => {
+            console.error("Error al detener el escáner:", err);
+        });
+    } else {
+        // Si no está escaneando, iniciar el escáner
+        if (!html5QrCode) {
+            html5QrCode = new Html5Qrcode("qr-reader");
+        }
 
-// Obtener ubicación
-navigator.geolocation.getCurrentPosition(position => {
-  const { latitude, longitude } = position.coords;
-  locationText.textContent = `Ubicación: ${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
-}, err => {
-  console.error("No se puede acceder a la ubicación:", err);
-});
-
-// Guardar foto
-saveBtn.addEventListener('click', () => {
-  const photoData = canvas.toDataURL(); // Imagen en formato base64
-  console.log("Foto guardada:", photoData);
-  // Guardar ubicación y foto en la base de datos o localStorage
+        html5QrCode
+            .start(
+                { facingMode: "environment" }, // Usar la cámara trasera
+                {
+                    fps: 10, // Cuadros por segundo
+                    qrbox: 250 // Tamaño del cuadro de escaneo
+                },
+                (decodedText) => {
+                    // Muestra el texto del QR en el resultado
+                    qrResult.textContent = `Resultado: ${decodedText}`;
+                    // Detener el escaneo después de leer el QR
+                    html5QrCode.stop().then(() => {
+                        isScanning = false; // Cambiar el estado de escaneo
+                    }).catch((err) => {
+                        console.error("Error al detener el escáner:", err);
+                    });
+                },
+                (errorMessage) => {
+                    // Mostrar errores en la consola
+                    console.warn(`Error durante el escaneo: ${errorMessage}`);
+                }
+            )
+            .then(() => {
+                isScanning = true; // Cambiar el estado de escaneo
+                qrResult.textContent = "Escaneando...";
+            })
+            .catch((err) => {
+                console.error("Error al iniciar el escáner:", err);
+            });
+    }
 });

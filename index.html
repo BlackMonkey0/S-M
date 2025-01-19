@@ -1,53 +1,94 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Subir Foto a Cloudinary</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escáner QR y Captura de Fotos</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Sube una foto a Cloudinary</h1>
+    <h1>VIAJES, FOTOS Y MUCHO AMOR</h1>
+    <video id="video" autoplay></video>
+    <div class="controls">
+        <button id="captureButton">Capturar Foto</button>
+        <button id="viewPhotosButton">Ver Fotos Capturadas</button>
+        <button id="viewMapButton">Ver Mapa Mundial</button>
+    </div>
 
-  <!-- Formulario para seleccionar una imagen -->
-  <input type="file" id="fileInput" accept="image/*" />
-  <button onclick="uploadImage()">Subir Imagen</button>
+    <script>
+        const video = document.getElementById("video");
+        const captureButton = document.getElementById("captureButton");
+        const viewPhotosButton = document.getElementById("viewPhotosButton");
+        const viewMapButton = document.getElementById("viewMapButton");
 
-  <script>
-    // Configuración de Cloudinary con tus credenciales
-    cloudinary.config({
-      cloud_name: 'do5vnt98x',  // Reemplaza con tu Cloud name
-      api_key: '239551735433286',        // Reemplaza con tu API key
-      api_secret: 'qpHRBM_cbqdo7af7qpCjEDbNGWU'   // Reemplaza con tu API secret
-    });
+        // Iniciar la cámara
+        async function startCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+            } catch (error) {
+                alert("Error al acceder a la cámara: " + error.message);
+            }
+        }
 
-    function uploadImage() {
-      const fileInput = document.getElementById('fileInput');
-      const file = fileInput.files[0];
+        // Obtener las coordenadas y la dirección
+        function getCoordinatesAndAddress() {
+            return new Promise((resolve, reject) => {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(async (position) => {
+                        const { latitude, longitude } = position.coords;
+                        try {
+                            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
+                            const data = await response.json();
+                            const address = data.address;
+                            const street = address.road || "Desconocida";
+                            const city = address.city || address.town || address.village || "Desconocido";
+                            resolve({ latitude, longitude, street, city });
+                        } catch (error) {
+                            reject(new Error("No se pudo obtener la dirección."));
+                        }
+                    }, error => reject(error));
+                } else {
+                    reject(new Error("Geolocalización no soportada"));
+                }
+            });
+        }
 
-      if (file) {
-        // Usamos la API de Cloudinary para subir la imagen
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('upload_preset', 'ml_default');  // Reemplaza con tu upload preset si es necesario
+        // Capturar foto y guardar con ubicación
+        captureButton.addEventListener("click", async () => {
+            const canvas = document.createElement("canvas");
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
+            const photoData = canvas.toDataURL("image/png");
 
-        fetch('https://api.cloudinary.com/v1_1/tu_cloud_name/image/upload', {
-          method: 'POST',
-          body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-          console.log('Imagen subida con éxito:', data);
-          alert('Imagen subida con éxito!');
-          console.log('URL de la imagen:', data.secure_url);
-        })
-        .catch(error => {
-          console.error('Error al subir la imagen:', error);
-          alert('Error al subir la imagen');
+            try {
+                const { latitude, longitude, street, city } = await getCoordinatesAndAddress();
+                const locationName = `Lat: ${latitude}, Lon: ${longitude} (${street}, ${city})`;
+
+                // Guardar las fotos en el localStorage
+                const storedPhotos = JSON.parse(localStorage.getItem("photos")) || [];
+                storedPhotos.push({ photo: photoData, coordinates: { latitude, longitude }, location: locationName });
+                localStorage.setItem("photos", JSON.stringify(storedPhotos));
+
+                alert("Foto capturada y guardada con ubicación.");
+            } catch (error) {
+                alert("No se pudo obtener la ubicación: " + error.message);
+            }
         });
-      } else {
-        alert('Por favor, selecciona una imagen primero.');
-      }
-    }
-  </script>
+
+        // Ver fotos capturadas
+        viewPhotosButton.addEventListener("click", () => {
+            window.location.href = "photos.html"; // Redirige a la página de fotos
+        });
+
+        // Ver mapa
+        viewMapButton.addEventListener("click", () => {
+            window.location.href = "map.html"; // Redirige a la página del mapa
+        });
+
+        // Iniciar la cámara al cargar la página
+        startCamera();
+    </script>
 </body>
 </html>

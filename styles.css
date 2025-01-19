@@ -1,99 +1,92 @@
 /* General */
 body {
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Arial', sans-serif;
+    background-color: #eef2f3;
     margin: 0;
     padding: 0;
-    background: linear-gradient(135deg, #ff9a9e, #fad0c4);
-    color: #333;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
+    justify-content: center;
     height: 100vh;
-  }
-  
-  /* Contenedor principal */
-  .container {
-    max-width: 800px;
-    margin: auto;
-    padding: 20px;
-    background: #fff;
-    border-radius: 20px;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(135deg, #00bcd4, #8e44ad);
+    color: white;
     text-align: center;
-  }
-  
-  /* Títulos */
-  h1 {
+    overflow: hidden;
+}
+
+h1 {
     font-size: 2.5rem;
-    color: #ff6f61;
     margin-bottom: 20px;
-    text-transform: uppercase;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-  }
-  
-  h2 {
-    font-size: 1.8rem;
-    margin-bottom: 10px;
-    color: #ff9671;
-  }
-  
-  /* Texto */
-  p {
-    font-size: 1.1rem;
-    line-height: 1.6;
-    margin-bottom: 20px;
-    color: #555;
-  }
-  
-  /* Imagen QR */
-  img {
-    max-width: 200px;
-    border-radius: 10px;
-    transition: transform 0.3s, box-shadow 0.3s;
-  }
-  
-  img:hover {
-    transform: scale(1.1);
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
-  }
-  
-  /* Botones */
-  button {
-    background: linear-gradient(135deg, #ff6f61, #ff9671);
-    color: #fff;
-    font-size: 1.2rem;
-    padding: 10px 20px;
-    margin: 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background 0.3s, transform 0.2s;
-  }
-  
-  button:hover {
-    background: linear-gradient(135deg, #ff9671, #ff6f61);
-    transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-  }
-  
-  button:active {
-    transform: translateY(1px);
-  }
-  
-  /* Footer */
-  footer {
-    margin-top: 20px;
-    font-size: 0.9rem;
-    color: #777;
-  }
-  
-  footer a {
-    color: #ff6f61;
-    text-decoration: none;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.5);
     font-weight: bold;
-  }
-  
-  footer a:hover {
-    text-decoration: underline;
-  }
-  
+    color: #f39c12;
+}
+
+/* Estilos para el video */
+video {
+    border: 8px solid rgba(255, 255, 255, 0.8);
+    margin-top: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease;
+}
+
+video:hover {
+    transform: scale(1.05);
+}
+
+/* Botón Estilizado */
+button {
+    padding: 15px 30px;
+    font-size: 18px;
+    background-color: #27ae60;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    margin-top: 20px;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+button:hover {
+    background-color: #2ecc71;
+    transform: scale(1.1);
+}
+
+/* Estilo para el resultado */
+#result {
+    margin-top: 30px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 10px 20px;
+    border-radius: 8px;
+    color: #f39c12;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    max-width: 80%;
+    word-wrap: break-word;
+}
+
+/* Responsividad */
+@media screen and (max-width: 768px) {
+    h1 {
+        font-size: 2rem;
+    }
+
+    video {
+        width: 100%;
+        max-width: 450px;
+        height: auto;
+    }
+
+    button {
+        font-size: 16px;
+        padding: 12px 24px;
+    }
+
+    #result {
+        font-size: 1rem;
+    }
+}
